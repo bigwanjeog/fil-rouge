@@ -393,7 +393,6 @@ create table PROJET
    PROJET_INFOS_TECH    CHAR(100),
    PROJET_LIBELLE_COURT CHAR(10)             not null,
    PROJET_LIBELLE_LONG  CHAR(50)             not null,
-   PROJET_SECTEUR_ACTIVITES CHAR(25)             not null,
    PROJET_TAILLE        NUMBER,
    constraint PK_PROJET primary key (PROJET_ID)
 );
