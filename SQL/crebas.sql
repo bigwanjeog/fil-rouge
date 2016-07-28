@@ -189,8 +189,8 @@ create table COLLABORATEUR
    COLLA_ID             NUMBER(4)            not null,
    COL_COLLA_ID         NUMBER(4),
    FONCTION_ID          NUMBER               not null,
-   COLLA_ADRESSE1       CHAR(25)             not null,
-   COLLA_ADRESSE2       CHAR(25),
+   COLLA_ADRESSE1       CHAR(100)             not null,
+   COLLA_ADRESSE2       CHAR(100),
    COLLA_CP             CHAR(5)              not null,
    COLLA_DATE_EMBAUCHE  DATE                 not null,
    COLLA_DATE_FIN_CONTRAT DATE,
@@ -335,7 +335,6 @@ create table INTERVENTION
    ETAPE_ID             NUMBER(6)            not null,
    INTERVENTION_DATE_DEBUT DATE                 not null,
    INTERVENTION_DATE_FIN DATE,
-   INTERVENTION_DOMAINE CHAR(50)             not null,
    INTERVENTION_DUREE   INTEGER,
    constraint PK_INTERVENTION primary key (INTERVENTION_ID)
 );
@@ -384,7 +383,7 @@ create table PROJET
    PROJET_CHARGE_REELE  NUMBER,
    PROJET_COLLA_MAX     NUMBER,
    PROJET_COMMSPECIFIQUE CHAR(100),
-   PROJET_CYCLE_VIE     CHAR(10),
+   PROJET_CYCLE_VIE     CHAR(50),
    PROJET_DATE_PREVUE_DEBUT DATE                 not null,
    PROJET_DATE_PREVUE_FIN DATE                 not null,
    PROJET_DATE_REELLE_DEBUT DATE,
