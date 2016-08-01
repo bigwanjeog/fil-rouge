@@ -164,8 +164,10 @@ create table CLIENT
    CLIENT_RAISON_SOCIALE CHAR(100)            not null,
    CLIENT_TEL           CHAR(10),
    CLIENT_TYPE          CHAR(1)              not null,
-   constraint PK_CLIENT primary key (CLIENT_ID)
+   constraint PK_CLIENT primary key (CLIENT_ID),
+   constraint CHK_CA_CLIENT CHECK(CLIENT_CA < (1000000*CLIENT_EFFECTIF))
 );
+
 
 /*==============================================================*/
 /* Index : EXERCE_FK                                            */
@@ -203,8 +205,12 @@ create table COLLABORATEUR
    COLLA_TEL            CHAR(10)             not null,
    COLLA_TITRE          CHAR(3)              not null,
    COLLA_VILLE          CHAR(20)             not null,
-   constraint PK_COLLABORATEUR primary key (COLLA_ID)
+   constraint PK_COLLABORATEUR primary key (COLLA_ID),
+   constraint CHK_TITRE_COLLAB CHECK((COLLA_TITRE IN ('MME', 'MLE') AND COLLA_SEXE IN 'F') OR (COLLA_TITRE IN 'MR' AND COLLA_SEXE IN 'M')),
+   constraint CHK_DATE_EMBAUCHE_COLLAB CHECK(COLLA_DATE_EMBAUCHE < COLLA_DATE_FIN_CONTRAT)
 );
+
+-- INSERT INTO COLLABORATEUR VALUES (1,1,1,'merguez','merguez','44444','18/06/1940','21/07/1969','merguez@merguez.merguez','0000000000','merguez','merguez','F','STA','0000000000','MLE','merguez');
 
 /*==============================================================*/
 /* Index : ASSUME_FK                                            */
@@ -336,7 +342,8 @@ create table INTERVENTION
    INTERVENTION_DATE_DEBUT DATE                 not null,
    INTERVENTION_DATE_FIN DATE,
    INTERVENTION_DUREE   INTEGER,
-   constraint PK_INTERVENTION primary key (INTERVENTION_ID)
+   constraint PK_INTERVENTION primary key (INTERVENTION_ID),
+   constraint CHK_DATE_INTERV CHECK(INTERVENTION_DATE_DEBUT < INTERVENTION_DATE_FIN)
 );
 
 /*==============================================================*/
@@ -393,7 +400,9 @@ create table PROJET
    PROJET_LIBELLE_COURT CHAR(10)             not null,
    PROJET_LIBELLE_LONG  CHAR(50)             not null,
    PROJET_TAILLE        NUMBER,
-   constraint PK_PROJET primary key (PROJET_ID)
+   constraint PK_PROJET primary key (PROJET_ID),
+   constraint CHK_DATE_PREVUE_PROJ CHECK(PROJET_DATE_PREVUE_DEBUT < PROJET_DATE_PREVUE_FIN),
+   constraint CHK_DATE_REELLE_PROJ CHECK(PROJET_DATE_REELLE_DEBUT < PROJET_DATE_REELLE_FIN)
 );
 
 /*==============================================================*/
@@ -484,6 +493,32 @@ create table UTILISE
    constraint PK_UTILISE primary key (TECHNOLOGIE_ID, PROJET_ID)
 );
 
+
+/* Compteurs */
+CREATE SEQUENCE SEQ_ACTIVITE_ID START WITH 1;
+CREATE SEQUENCE SEQ_CLIENT_ID START WITH 1;
+CREATE SEQUENCE SEQ_COLLABORATEUR_ID START WITH 1;
+CREATE SEQUENCE SEQ_CONTACT_ID START WITH 1;
+CREATE SEQUENCE SEQ_DOCUMENT_ID START WITH 1;
+CREATE SEQUENCE SEQ_ETAPE_PROJET_ID START WITH 1;
+CREATE SEQUENCE SEQ_FONCTION_ID START WITH 1;
+CREATE SEQUENCE SEQ_INTERVENTION_ID START WITH 1;
+CREATE SEQUENCE SEQ_NATURE_CLIENT_ID START WITH 1;
+CREATE SEQUENCE SEQ_SALAIRE_ID START WITH 1;
+CREATE SEQUENCE SEQ_TECHNOLOGIE_ID START WITH 1;
+CREATE SEQUENCE SEQ_TYPE_PROJET_ID START WITH 1;
+CREATE SEQUENCE SEQ_TYPE_TECHNO_ID START WITH 1;
+CREATE SEQUENCE SEQ_PROJET_ID START WITH 1;
+CREATE SEQUENCE SEQ_ETAPE_ID START WITH 1;
+
+/* Création de la vue pour récupérer les deux derniers chiffres de l'année */
+
+CREATE VIEW V_ANNEE (ANNEE_COURS) AS
+select to_number(to_char(sysdate, 'RR')) from dual;
+
+
+/* Ajout des contraintes */
+
 alter table CLIENT
    add constraint FK_CLIENT_EST_DE_NATURE_C foreign key (NATURE_ID)
       references NATURE_CLIENT (NATURE_ID);
@@ -571,3 +606,234 @@ alter table UTILISE
 alter table UTILISE
    add constraint FK_UTILISE_UTILISE2_PROJET foreign key (PROJET_ID)
       references PROJET (PROJET_ID);
+
+
+
+/* Fonction DATE_ANNEE */
+create or replace FUNCTION DATE_ANNEE RETURN NUMBER
+IS
+annee varchar2(2);
+pj_num varchar2(2);
+pj_id number(4);
+j number;
+BEGIN
+annee := SUBSTR(EXTRACT(YEAR FROM SYSDATE()),3,2);
+j := SEQ_PROJET_ID.nextval;
+CASE 
+WHEN j = 1 THEN pj_num := CONCAT('0',j);
+WHEN j = 2 THEN pj_num := CONCAT('0',j);
+WHEN j = 3 THEN pj_num := CONCAT('0',j);
+WHEN j = 4 THEN pj_num := CONCAT('0',j);
+WHEN j = 5 THEN pj_num := CONCAT('0',j);
+WHEN j = 6 THEN pj_num := CONCAT('0',j);
+WHEN j = 7 THEN pj_num := CONCAT('0',j);
+WHEN j = 8 THEN pj_num := CONCAT('0',j);
+WHEN j = 9 THEN pj_num := CONCAT('0',j);
+ELSE pj_num := j;
+END CASE;
+
+
+pj_id := TO_NUMBER(CONCAT(annee,pj_num)) ;
+
+ DBMS_OUTPUT.PUT_LINE(pj_id);
+  RETURN pj_id;
+END DATE_ANNEE;
+
+
+/* Trigger */
+
+create or replace TRIGGER TRIGGER_PROJET_ID 
+BEFORE INSERT ON PROJET
+REFERENCING NEW AS new_proj_id
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new_proj_id.PROJET_ID IS NULL
+    THEN
+      :new_proj_id.PROJET_ID := DATE_ANNEE;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_CLIENT_ID 
+BEFORE INSERT ON CLIENT
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.CLIENT_ID IS NULL
+    THEN
+      :new.CLIENT_ID := SEQ_CLIENT_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_ACTIVITE_ID 
+BEFORE INSERT ON ACTIVITE
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.ACTIVITE_ID IS NULL
+    THEN
+      :new.ACTIVITE_ID := SEQ_ACTIVITE_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_COLLABORATEUR_ID 
+BEFORE INSERT ON COLLABORATEUR
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.COLLABORATEUR_ID IS NULL
+    THEN
+      :new.COLLABORATEUR_ID := SEQ_COLLABORATEUR_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_CONTACT_ID 
+BEFORE INSERT ON CONTACT
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.CONTACT_ID IS NULL
+    THEN
+      :new.CONTACT_ID := SEQ_CONTACT_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_DOCUMENT_ID 
+BEFORE INSERT ON DOCUMENT
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.DOCUMENT_ID IS NULL
+    THEN
+      :new.DOCUMENT_ID := SEQ_DOCUMENT_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_ETAPE_PROJET_ID 
+BEFORE INSERT ON ETAPE_PROJET
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.ETAPE_PROJET_ID IS NULL
+    THEN
+      :new.ETAPE_PROJET_ID := SEQ_ETAPE_PROJET_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_FONCTION_ID 
+BEFORE INSERT ON FONCTION
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.FONCTION_ID IS NULL
+    THEN
+      :new.FONCTION_ID := SEQ_FONCTION_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_INTERVENTION_ID 
+BEFORE INSERT ON INTERVENTION
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.INTERVENTION_ID IS NULL
+    THEN
+      :new.INTERVENTION_ID := SEQ_INTERVENTION_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_NATURE_CLIENT_ID 
+BEFORE INSERT ON NATURE_CLIENT
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.NATURE_CLIENT_ID IS NULL
+    THEN
+      :new.NATURE_CLIENT_ID := SEQ_NATURE_CLIENT_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_SALAIRE_ID 
+BEFORE INSERT ON SALAIRE
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.SALAIRE_ID IS NULL
+    THEN
+      :new.SALAIRE_ID := SEQ_SALAIRE_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_TECHNOLOGIE_ID 
+BEFORE INSERT ON TECHNOLOGIE
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.TECHNOLOGIE_ID IS NULL
+    THEN
+      :new.TECHNOLOGIE_ID := SEQ_TECHNOLOGIE_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_TYPE_TECHNO_ID 
+BEFORE INSERT ON TYPE_TECHNO
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.TYPE_TECHNO_ID IS NULL
+    THEN
+      :new.TYPE_TECHNO_ID := SEQ_TYPE_TECHNO_ID.nextval;
+    END IF;
+  END IF;  
+END ;
+
+create or replace TRIGGER TRIGGER_TYPE_PROJET_ID 
+BEFORE INSERT ON TYPE_PROJET
+REFERENCING NEW AS new
+for each row
+BEGIN
+  IF INSERTING
+  THEN
+    IF :new.TYPE_PROJET_ID IS NULL
+    THEN
+      :new.TYPE_PROJET_ID := SEQ_TYPE_PROJET_ID.nextval;
+    END IF;
+  END IF;  
+END ;
