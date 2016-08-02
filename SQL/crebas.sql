@@ -619,17 +619,10 @@ j number;
 BEGIN
 annee := SUBSTR(EXTRACT(YEAR FROM SYSDATE()),3,2);
 j := SEQ_PROJET_ID.nextval;
-CASE 
-WHEN j = 1 THEN pj_num := CONCAT('0',j);
-WHEN j = 2 THEN pj_num := CONCAT('0',j);
-WHEN j = 3 THEN pj_num := CONCAT('0',j);
-WHEN j = 4 THEN pj_num := CONCAT('0',j);
-WHEN j = 5 THEN pj_num := CONCAT('0',j);
-WHEN j = 6 THEN pj_num := CONCAT('0',j);
-WHEN j = 7 THEN pj_num := CONCAT('0',j);
-WHEN j = 8 THEN pj_num := CONCAT('0',j);
-WHEN j = 9 THEN pj_num := CONCAT('0',j);
-ELSE pj_num := j;
+IF j <= 9
+THEN
+pj_num := CONCAT('0',j);
+END IF;
 END CASE;
 
 
