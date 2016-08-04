@@ -697,39 +697,31 @@ END RESET_SEQ_PROJET;
 
 /* Fonction DATE_ANNEE */
 create or replace FUNCTION DATE_ANNEE RETURN NUMBER
-IS
-annee varchar2(2);
-pj_num varchar2(2);
-pj_id number(4);
-j number;
-req varchar2(100);
-annee2 varchar(2);
-BEGIN
-SELECT MAX(PROJET_ID)INTO req FROM PROJET ;
+	IS
+	annee varchar2(2);
+	pj_num varchar2(2);
+	pj_id number(4);
+	j number;
+	req varchar2(100);
+	annee2 varchar(2);
+	BEGIN
+		SELECT MAX(PROJET_ID)INTO req FROM PROJET ;
+		annee2 := SUBSTR(req,1,2);
+		annee := SUBSTR(EXTRACT(YEAR FROM SYSDATE()),3,2);
+		IF annee2 != annee THEN 
+			RESET_SEQ_PROJET;
+		END IF;
 
-
-annee2 := SUBSTR(req,1,2);
-annee := SUBSTR(EXTRACT(YEAR FROM SYSDATE()),3,2);
-IF annee2 != annee
-THEN
-RESET_SEQ_PROJET;
-END IF;
-
-j := SEQ_PROJET_ID.nextval;
-
-
-IF j <= 9
-THEN
-pj_num := CONCAT('0',j);
-END IF;
-
-
-pj_id := TO_NUMBER(CONCAT(annee,pj_num)) ;
--- DEBUG
---DBMS_OUTPUT.PUT_LINE(pj_id);
---DBMS_OUTPUT.PUT_LINE(annee2);
-  RETURN pj_id;
-END DATE_ANNEE;
+		j := SEQ_PROJET_ID.nextval;
+		IF j <= 9 THEN 
+			pj_num := CONCAT('0',j);
+		END IF;
+		pj_id := TO_NUMBER(CONCAT(annee,pj_num)) ;
+		-- DEBUG
+		--DBMS_OUTPUT.PUT_LINE(pj_id);
+		--DBMS_OUTPUT.PUT_LINE(annee2);
+		RETURN pj_id;
+	END DATE_ANNEE;
 /
 
 /* Trigger (Ndlr : METTRE UN /) */
