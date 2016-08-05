@@ -733,10 +733,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new_proj_id.PROJET_ID IS NULL
-    THEN
       :new_proj_id.PROJET_ID := DATE_ANNEE;
-    END IF;
   END IF;  
 END;
 /
@@ -747,10 +744,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.CLIENT_ID IS NULL
-    THEN
       :new.CLIENT_ID := SEQ_CLIENT_ID.nextval;
-    END IF;
   END IF;  
 END;
 /
@@ -761,10 +755,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.ACTIVITE_ID IS NULL
-    THEN
       :new.ACTIVITE_ID := SEQ_ACTIVITE_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -775,10 +766,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.COLLA_ID IS NULL
-    THEN
       :new.COLLA_ID := SEQ_COLLABORATEUR_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -789,10 +777,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.CONTACT_ID IS NULL
-    THEN
       :new.CONTACT_ID := SEQ_CONTACT_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -803,10 +788,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.DOCUMENT_ID IS NULL
-    THEN
       :new.DOCUMENT_ID := SEQ_DOCUMENT_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -817,10 +799,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.ETAPEPROJ_ID IS NULL
-    THEN
       :new.ETAPEPROJ_ID := SEQ_ETAPE_PROJET_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -831,10 +810,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.FONCTION_ID IS NULL
-    THEN
       :new.FONCTION_ID := SEQ_FONCTION_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -845,10 +821,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.INTERVENTION_ID IS NULL
-    THEN
       :new.INTERVENTION_ID := SEQ_INTERVENTION_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -859,10 +832,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.NATURE_ID IS NULL
-    THEN
       :new.NATURE_ID := SEQ_NATURE_CLIENT_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -873,10 +843,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.SALAIRE_ID IS NULL
-    THEN
       :new.SALAIRE_ID := SEQ_SALAIRE_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -887,10 +854,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.TECHNOLOGIE_ID IS NULL
-    THEN
       :new.TECHNOLOGIE_ID := SEQ_TECHNOLOGIE_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -901,10 +865,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.TYPETECHNO_ID IS NULL
-    THEN
       :new.TYPETECHNO_ID := SEQ_TYPE_TECHNO_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -915,10 +876,7 @@ for each row
 BEGIN
   IF INSERTING
   THEN
-    IF :new.TYPEPROJ_ID IS NULL
-    THEN
       :new.TYPEPROJ_ID := SEQ_TYPE_PROJET_ID.nextval;
-    END IF;
   END IF;  
 END ;
 /
@@ -929,9 +887,7 @@ DECLARE
 CODE_PROJET NUMBER(4) := :NEW."PROJET_ID";
 BEGIN
   IF INSERTING THEN
-    IF :NEW."ETAPE_ID" IS NULL     THEN
      SELECT TO_NUMBER(CONCAT(TO_CHAR(CODE_PROJET,'9999'), TO_CHAR(SEQ_ETAPE_ID.nextval,'FM09'))) INTO :NEW."ETAPE_ID" FROM DUAL;
-    END IF;
   END IF;  
 END;
 /
