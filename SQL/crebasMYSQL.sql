@@ -267,3 +267,93 @@ create table UTILISE
    PROJET_ID            int(4)            not null,
    constraint PK_UTILISE primary key (TECHNOLOGIE_ID, PROJET_ID)
 );
+
+
+/* Ajout des contraintes */
+alter table CLIENT
+   add constraint FK_CLIENT_EST_DE_NATURE_C foreign key (NATURE_ID)
+      references NATURE_CLIENT (NATURE_ID);
+
+alter table CLIENT
+   add constraint FK_CLIENT_EXERCE_ACTIVITE foreign key (ACTIVITE_ID)
+      references ACTIVITE (ACTIVITE_ID);
+
+alter table COLLABORATEUR
+   add constraint FK_COLLABOR_ACCUEUILL_COLLABOR foreign key (COL_COLLA_ID)
+      references COLLABORATEUR (COLLA_ID);
+
+alter table COLLABORATEUR
+   add constraint FK_COLLABOR_ASSUME_FONCTION foreign key (FONCTION_ID)
+      references FONCTION (FONCTION_ID);
+
+alter table DOCUMENT
+   add constraint FK_DOCUMENT_REDIGE_COLLABOR foreign key (COLLA_ID)
+      references COLLABORATEUR (COLLA_ID);
+
+alter table ETAPE
+   add constraint FK_ETAPE_APPARTIEN_ETAPE_PR foreign key (ETAPEPROJ_ID)
+      references ETAPE_PROJET (ETAPEPROJ_ID);
+
+alter table ETAPE
+   add constraint FK_ETAPE_CONTIENT_PROJET foreign key (PROJET_ID)
+      references PROJET (PROJET_ID);
+
+alter table GERE
+   add constraint FK_GERE_GERE_CONTACT foreign key (CONTACT_ID)
+      references CONTACT (CONTACT_ID);
+
+alter table GERE
+   add constraint FK_GERE_GERE2_CLIENT foreign key (CLIENT_ID)
+      references CLIENT (CLIENT_ID);
+
+alter table GERE
+   add constraint FK_GERE_GERE3_PROJET foreign key (PROJET_ID)
+      references PROJET (PROJET_ID);
+
+alter table INCLUT
+   add constraint FK_INCLUT_INCLUT_PROJET foreign key (PROJET_ID)
+      references PROJET (PROJET_ID);
+
+alter table INCLUT
+   add constraint FK_INCLUT_INCLUT2_DOCUMENT foreign key (DOCUMENT_ID)
+      references DOCUMENT (DOCUMENT_ID);
+
+alter table INTERVENTION
+   add constraint FK_INTERVEN_CONCERNE2_ETAPE foreign key (ETAPE_ID)
+      references ETAPE (ETAPE_ID);
+
+alter table INTERVENTION
+   add constraint FK_INTERVEN_REALISE_COLLABOR foreign key (COLLA_ID)
+      references COLLABORATEUR (COLLA_ID);
+
+alter table INTERVENTION
+   add constraint FK_INTERVEN_RELEVE_FONCTION foreign key (FONCTION_ID)
+      references FONCTION (FONCTION_ID);
+
+alter table PROJET
+   add constraint FK_PROJET_CONCERNE_ACTIVITE foreign key (ACTIVITE_ID)
+      references ACTIVITE (ACTIVITE_ID);
+
+alter table PROJET
+   add constraint FK_PROJET_DIRIGE_COLLABOR foreign key (COLLA_ID)
+      references COLLABORATEUR (COLLA_ID);
+
+alter table PROJET
+   add constraint FK_PROJET_EST_DE2_TYPE_PRO foreign key (TYPEPROJ_ID)
+      references TYPE_PROJET (TYPEPROJ_ID);
+
+alter table SALAIRE
+   add constraint FK_SALAIRE_GAGNE_COLLABOR foreign key (COLLA_ID)
+      references COLLABORATEUR (COLLA_ID);
+
+alter table TECHNOLOGIE
+   add constraint FK_TECHNOLO_EST_DE3_TYPE_TEC foreign key (TYPETECHNO_ID)
+      references TYPE_TECHNO (TYPETECHNO_ID);
+
+alter table UTILISE
+   add constraint FK_UTILISE_UTILISE_TECHNOLO foreign key (TECHNOLOGIE_ID)
+      references TECHNOLOGIE (TECHNOLOGIE_ID);
+
+alter table UTILISE
+   add constraint FK_UTILISE_UTILISE2_PROJET foreign key (PROJET_ID)
+      references PROJET (PROJET_ID);
