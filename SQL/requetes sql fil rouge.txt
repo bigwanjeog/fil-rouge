@@ -1,0 +1,68 @@
+/* A TESTER DANS ORACLE AUSSI */
+
+
+/*Requête 1
+On souhaite obtenir par secteur d’activité  la moyenne des charges estimées des projets.. */
+
+
+Select Avg(p.PROJET_CHARGE_GLOBALE_ESTIMEE)
+FROM PROJET p
+JOIN ACTIVITE a
+ON a.ACTIVITE_ID = p.ACTIVITE_ID
+GROUP BY p.ACTIVITE_ID
+
+
+/*
+Requête 2
+On souhaite obtenir la liste des projets (libellé court) sur lesquels un collaborateur est intervenu. Préciser également sa fonction dans les projets.
+*/
+Select p.PROJET_LIBELLE_COURT, f.FONCTION_LIBELLE
+FROM PROJET p
+JOIN ETAPE e
+ON e.PROJET_ID = p.PROJET_ID
+JOIN INTERVENTION i
+ON i.ETAPE_ID = e.ETAPE_ID
+JOIN COLLABORATEUR c
+ON c.COLLA_ID = i.COLLA_ID
+JOIN FONCTION f
+ON f.FONCTION_ID = i.FONCTION_ID
+WHERE i.COLLA_ID IS NOT NULL
+
+/*
+Requête 3
+On souhaite obtenir à la date du jour la liste des projets en cours, par secteur d’activité. 
+Préciser le nombre de collaborateurs associés aux projets et ceci par fonction.
+*/
+Select p.PROJET_LIBELLE_COURT,count(i.COLLA_ID), f.FONCTION_LIBELLE
+FROM PROJET p
+JOIN ETAPE e
+ON p.PROJET_ID = e.PROJET_ID
+JOIN INTERVENTION i
+ON i.ETAPE_ID = e.ETAPE_ID
+JOIN FONCTION f
+ON f.FONCTION_ID = i.FONCTION_ID
+WHERE p.PROJET_DATE_REELLE_DEBUT < CURDATE() AND p.PROJET_DATE_REELLE_FIN IS NULL
+GROUP BY ACTIVITE_ID
+
+
+/*
+Requêtes de mise à jour :
+ - Augmenter tous les salaires des collaborateurs de : - 5% si ils ont plus de 5 ans d’ancienneté. 
+ */
+ UPDATE salaire s 
+  JOIN collaborateur c
+ on s.COLLA_ID = c.COLLA_ID
+ SET s.SALAIRE_MONTANT = s.SALAIRE_MONTANT*1.05
+ WHERE YEAR(CURDATE())-YEAR(c.COLLA_DATE_EMBAUCHE) > 5
+
+
+
+
+ /*
+- Supprimer de la base de données les projets qui sont terminés et qui n’ont pas eut de charges (étapes) associées.
+*/
+
+DELETE FROM PROJET p
+inner JOIN ETAPE e
+ON p.PROJET_ID = e.PROJET_ID
+WHERE p.PROJET_DATE_REELLE_FIN < CURDATE()
