@@ -73,20 +73,38 @@ GROUP BY
 Requêtes de mise à jour :
  - Augmenter tous les salaires des collaborateurs de : - 5% si ils ont plus de 5 ans d’ancienneté. 
  */
+ /*MySQL*/
  UPDATE salaire s 
   JOIN collaborateur c
  on s.COLLA_ID = c.COLLA_ID
  SET s.SALAIRE_MONTANT = s.SALAIRE_MONTANT*1.05
  WHERE YEAR(CURDATE())-YEAR(c.COLLA_DATE_EMBAUCHE) > 5
-
+ 
+/*ORACLE*/
+UPDATE salaire s
+SET s.SALAIRE_MONTANT = s.SALAIRE_MONTANT*1.05
+WHERE s.COLLA_ID IN (SELECT
+      s.SALAIRE_ID
+    FROM salaire s
+    INNER JOIN collaborateur c
+    ON
+      s.COLLA_ID = c.COLLA_ID
+    WHERE
+      EXTRACT(YEAR FROM SYSDATE)-EXTRACT( YEAR FROM(c.COLLA_DATE_EMBAUCHE)) > 5);
 
 
 
  /*
 - Supprimer de la base de données les projets qui sont terminés et qui n’ont pas eut de charges (étapes) associées.
 */
-
+/*MySQL*/
 DELETE FROM PROJET p
 inner JOIN ETAPE e
 ON p.PROJET_ID = e.PROJET_ID
 WHERE p.PROJET_DATE_REELLE_FIN < CURDATE()
+
+/*ORACLE*/
+DELETE FROM (select * from PROJET p
+inner JOIN ETAPE e
+ON p.PROJET_ID = e.PROJET_ID
+WHERE p.PROJET_DATE_REELLE_FIN < SYSDATE);
