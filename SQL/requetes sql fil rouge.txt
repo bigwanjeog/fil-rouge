@@ -33,6 +33,7 @@ Requête 3
 On souhaite obtenir à la date du jour la liste des projets en cours, par secteur d’activité. 
 Préciser le nombre de collaborateurs associés aux projets et ceci par fonction.
 */
+/* MySQL */
 Select p.PROJET_LIBELLE_COURT,count(i.COLLA_ID), f.FONCTION_LIBELLE
 FROM PROJET p
 JOIN ETAPE e
@@ -44,6 +45,29 @@ ON f.FONCTION_ID = i.FONCTION_ID
 WHERE p.PROJET_DATE_REELLE_DEBUT < CURDATE() AND p.PROJET_DATE_REELLE_FIN IS NULL
 GROUP BY ACTIVITE_ID
 
+
+/* ORACLE */
+SELECT
+  p.PROJET_LIBELLE_COURT,
+  COUNT(i.COLLA_ID),
+  f.FONCTION_LIBELLE,
+  p.ACTIVITE_ID
+FROM
+  PROJET p
+JOIN ETAPE e
+ON
+  p.PROJET_ID = e.PROJET_ID
+JOIN INTERVENTION i
+ON
+  i.ETAPE_ID = e.ETAPE_ID
+JOIN FONCTION f
+ON
+  f.FONCTION_ID = i.FONCTION_ID
+WHERE
+  p.PROJET_DATE_REELLE_DEBUT  < SYSDATE
+AND p.PROJET_DATE_REELLE_FIN IS NULL
+GROUP BY
+  p.ACTIVITE_ID, p.PROJET_LIBELLE_COURT, f.FONCTION_LIBELLE;
 
 /*
 Requêtes de mise à jour :
