@@ -245,8 +245,6 @@ create table COLLABORATEUR
    constraint CHK_DATE_EMBAUCHE_COLLAB CHECK(COLLA_DATE_EMBAUCHE < COLLA_DATE_FIN_CONTRAT)
 );
 
--- INSERT INTO COLLABORATEUR VALUES (1,1,1,'merguez','merguez','44444','18/06/1940','21/07/1969','merguez@merguez.merguez','0000000000','merguez','merguez','F','STA','0000000000','MLE','merguez');
-
 /*==============================================================*/
 /* Index : ASSUME_FK                                            */
 /*==============================================================*/
